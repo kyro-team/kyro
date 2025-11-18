@@ -1,6 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { AuthProvider } from "./src/contexts/AuthContext";
 
 // Auth Flow
 import WelcomeScreen from "./screens/Auth/WelcomeScreen";
@@ -24,32 +25,34 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          gestureEnabled: true,
-          animation: "default",
-        }}
-      >
-        {/* Auth Flow */}
-        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+    <AuthProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            gestureEnabled: true,
+            animation: "default",
+          }}
+        >
+          {/* Auth Flow */}
+          <Stack.Screen name="Welcome" component={WelcomeScreen} />
 
-        {/* Home Flow */}
-        <Stack.Screen name="Home" component={HomeScreen} />
+          {/* Home Flow */}
+          <Stack.Screen name="Home" component={HomeScreen} />
 
-        {/* Reflection Flow */}
-        <Stack.Screen name="SinceLastSpoke" component={SinceLastSpokeScreen} />
-        <Stack.Screen name="ReadyToTalk" component={ReadyToTalkScreen} />
-        <Stack.Screen name="Listening" component={ListeningScreen} />
-        <Stack.Screen name="Processing" component={ProcessingScreen} />
-        <Stack.Screen name="Confirmation" component={ConfirmationScreen} />
+          {/* Reflection Flow */}
+          <Stack.Screen name="SinceLastSpoke" component={SinceLastSpokeScreen} />
+          <Stack.Screen name="ReadyToTalk" component={ReadyToTalkScreen} />
+          <Stack.Screen name="Listening" component={ListeningScreen} />
+          <Stack.Screen name="Processing" component={ProcessingScreen} />
+          <Stack.Screen name="Confirmation" component={ConfirmationScreen} />
 
-        {/* Chat Flow */}
-        <Stack.Screen name="ChatInitial" component={ChatInitialScreen} />
-        <Stack.Screen name="ChatConversation" component={ChatConversationScreen} />
-        <Stack.Screen name="ChatSummary" component={ChatSummaryScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+          {/* Chat Flow */}
+          <Stack.Screen name="ChatInitial" component={ChatInitialScreen} />
+          <Stack.Screen name="ChatConversation" component={ChatConversationScreen} />
+          <Stack.Screen name="ChatSummary" component={ChatSummaryScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthProvider>
   );
 }

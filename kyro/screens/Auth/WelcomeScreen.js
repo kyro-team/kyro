@@ -12,25 +12,46 @@
  * - Google Sign-In button for authentication
  */
 
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts, DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from "@expo-google-fonts/dm-sans";
+import { useAuth } from "../../src/contexts/AuthContext";
 
 export default function WelcomeScreen({ navigation }) {
+  const { signInWithGoogle, isAuthenticated, loading } = useAuth();
+
   const [fontsLoaded] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
     DMSans_700Bold,
   });
 
-  const handleGoogleSignIn = () => {
-    // TODO: Implement Google Sign-In
-    navigation.navigate("Home");
+  // Navigate to Home when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigation.replace("Home");
+    }
+  }, [isAuthenticated, navigation]);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Sign in error:", error);
+    }
   };
 
-  if (!fontsLoaded) {
-    return null;
+  if (!fontsLoaded || loading) {
+    return (
+      <LinearGradient
+        colors={["#D4C5A9", "#6BA3A0", "#7CB342"]}
+        locations={[0, 0.5, 1]}
+        style={styles.container}
+      >
+        <ActivityIndicator size="large" color="#3D3D3D" />
+      </LinearGradient>
+    );
   }
 
   return (
@@ -52,6 +73,14 @@ export default function WelcomeScreen({ navigation }) {
             <Text style={styles.googleIcon}>G</Text>
           </View>
           <Text style={styles.googleButtonText}>Continue with Google</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.skipButton}
+          onPress={() => navigation.replace("Home")}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.skipButtonText}>Skip for now</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -107,5 +136,16 @@ const styles = StyleSheet.create({
     color: "#3D3D3D",
     fontSize: 15,
     fontFamily: "DMSans_500Medium",
+  },
+  skipButton: {
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  skipButtonText: {
+    color: "#3D3D3D",
+    fontSize: 14,
+    fontFamily: "DMSans_400Regular",
+    opacity: 0.7,
   },
 });
