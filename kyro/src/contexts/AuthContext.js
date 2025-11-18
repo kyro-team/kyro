@@ -21,14 +21,24 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [accessToken, setAccessToken] = useState(null);
 
-  // Configure Google Sign-In
+  // Configure Google Sign-In (calendar scope added back after testing)
   const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    redirectUri: "https://auth.expo.io/@gilxsilva/kyro",
+    scopes: ["openid", "profile", "email"],
   });
+
+  // Debug: Log auth response
+  useEffect(() => {
+    if (response) {
+      console.log("Auth response type:", response.type);
+      console.log("Auth response:", JSON.stringify(response, null, 2));
+    }
+  }, [response]);
 
   // Listen to auth state changes
   useEffect(() => {
@@ -43,7 +53,12 @@ export function AuthProvider({ children }) {
   // Handle Google Sign-In response
   useEffect(() => {
     if (response?.type === "success") {
-      const { id_token } = response.params;
+      const { id_token, access_token } = response.params;
+
+      // Store access token for Google API calls (Calendar, etc.)
+      setAccessToken(access_token);
+
+      // Sign in to Firebase with Google credential
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential);
     }
@@ -52,7 +67,8 @@ export function AuthProvider({ children }) {
   // Sign in with Google
   const signInWithGoogle = async () => {
     try {
-      await promptAsync();
+      const result = await promptAsync({ useProxy: true });
+      console.log("promptAsync result:", result);
     } catch (error) {
       console.error("Error signing in with Google:", error);
       throw error;
@@ -63,6 +79,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await signOut(auth);
+      setAccessToken(null);
     } catch (error) {
       console.error("Error signing out:", error);
       throw error;
@@ -72,6 +89,7 @@ export function AuthProvider({ children }) {
   const value = {
     user,
     loading,
+    accessToken,
     signInWithGoogle,
     logout,
     isAuthenticated: !!user,

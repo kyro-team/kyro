@@ -8,30 +8,92 @@
  * Key Features:
  * - Personalized greeting ("Hello Gabriella")
  * - Time-aware message (e.g., "pretty calm morning today")
- * - Recent activities/events list (Breakfast at Juliet, Farmers market, etc.)
+ * - Recent activities/events list from Google Calendar
  * - "Do you want to reflect on your week?" prompt
  * - "Let's talk" CTA button to start reflection
  * - Bottom navigation (Reflect, Chat, Share icons)
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { useAuth } from '../../src/contexts/AuthContext';
+import { getFormattedCalendarEvents } from '../../src/services/calendarService';
 
 export default function HomeScreen({ navigation }) {
+  const { user, accessToken } = useAuth();
+  const [events, setEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  const [eventsError, setEventsError] = useState(null);
+
+  // Get user's first name
+  const firstName = user?.displayName?.split(' ')[0] || 'there';
+
+  // Get time-based greeting
+  const getTimeGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
+  };
+
+  // Fetch calendar events
+  useEffect(() => {
+    async function loadEvents() {
+      if (!accessToken) return;
+
+      setLoadingEvents(true);
+      setEventsError(null);
+
+      try {
+        const calendarEvents = await getFormattedCalendarEvents(accessToken, 5);
+        setEvents(calendarEvents);
+      } catch (error) {
+        console.error('Failed to fetch calendar events:', error);
+        setEventsError(error.message);
+      } finally {
+        setLoadingEvents(false);
+      }
+    }
+
+    loadEvents();
+  }, [accessToken]);
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.greeting}>Hello Gabriella,</Text>
-        <Text style={styles.subtitle}>Looks like you have a pretty calm morning today.</Text>
+        <Text style={styles.greeting}>Hello {firstName},</Text>
+        <Text style={styles.subtitle}>
+          {events.length === 0
+            ? `Looks like you have a pretty calm ${getTimeGreeting()} today.`
+            : `Here's what's coming up this ${getTimeGreeting()}.`}
+        </Text>
 
-        {/* Recent Activities */}
+        {/* Calendar Events */}
         <View style={styles.activitiesContainer}>
-          <View style={styles.activityItem}>
-            <Text style={styles.activityText}>Breakfast at Juliet</Text>
-          </View>
-          <View style={styles.activityItem}>
-            <Text style={styles.activityText}>Don't need to stop with the Farmers market</Text>
-          </View>
+          {loadingEvents ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator color="#FFFFFF" />
+              <Text style={styles.loadingText}>Loading your calendar...</Text>
+            </View>
+          ) : eventsError ? (
+            <View style={styles.activityItem}>
+              <Text style={styles.activityText}>Unable to load calendar</Text>
+            </View>
+          ) : events.length === 0 ? (
+            <View style={styles.activityItem}>
+              <Text style={styles.activityText}>No upcoming events</Text>
+            </View>
+          ) : (
+            events.map((event) => (
+              <View key={event.id} style={styles.activityItem}>
+                <Text style={styles.eventTime}>{event.timeFormatted}</Text>
+                <Text style={styles.activityText}>{event.title}</Text>
+                {event.location ? (
+                  <Text style={styles.eventLocation}>{event.location}</Text>
+                ) : null}
+              </View>
+            ))
+          )}
         </View>
 
         {/* Reflection Prompt */}
@@ -95,6 +157,31 @@ const styles = StyleSheet.create({
   activityText: {
     color: '#FFFFFF',
     fontSize: 14,
+    fontWeight: '500',
+  },
+  eventTime: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    opacity: 0.8,
+    marginBottom: 4,
+  },
+  eventLocation: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    opacity: 0.7,
+    marginTop: 4,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+  },
+  loadingText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    marginLeft: 8,
+    opacity: 0.9,
   },
   promptContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
