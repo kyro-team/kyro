@@ -1,21 +1,6 @@
-/**
- * HomeScreen
- *
- * GOAL: Display the main dashboard after login with personalized greeting and recent activities.
- * Shows the user's name, time-based greeting, and a summary of recent events/memories.
- * Provides quick access to start a reflection session.
- *
- * Key Features:
- * - Personalized greeting ("Hello Gabriella")
- * - Time-aware message (e.g., "pretty calm morning today")
- * - Recent activities/events list from Google Calendar
- * - "Do you want to reflect on your week?" prompt
- * - "Let's talk" CTA button to start reflection
- * - Bottom navigation (Reflect, Chat, Share icons)
- */
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { getFormattedCalendarEvents } from '../../src/services/calendarService';
 
@@ -25,10 +10,8 @@ export default function HomeScreen({ navigation }) {
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [eventsError, setEventsError] = useState(null);
 
-  // Get user's first name
   const firstName = user?.displayName?.split(' ')[0] || 'there';
 
-  // Get time-based greeting
   const getTimeGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'morning';
@@ -36,11 +19,9 @@ export default function HomeScreen({ navigation }) {
     return 'evening';
   };
 
-  // Fetch calendar events
   useEffect(() => {
     async function loadEvents() {
       if (!accessToken) return;
-
       setLoadingEvents(true);
       setEventsError(null);
 
@@ -59,7 +40,19 @@ export default function HomeScreen({ navigation }) {
   }, [accessToken]);
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#D4C5A9', '#6BA3A0', '#7CB342']}
+      locations={[0, 0.5, 1]}
+      style={styles.container}
+    >
+      {/* Back arrow – always goes to Welcome */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.navigate('Welcome')}
+      >
+        <Text style={styles.backArrow}>←</Text>
+      </TouchableOpacity>
+
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.greeting}>Hello {firstName},</Text>
         <Text style={styles.subtitle}>
@@ -108,30 +101,46 @@ export default function HomeScreen({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* Bottom Navigation Placeholder */}
+      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🎤</Text>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => navigation.navigate('Home')}
+        >
+          <Text style={styles.navText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => navigation.navigate('SinceLastSpoke')}
+        >
+          <Text style={styles.navText}>Reflect</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>💬</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>📤</Text>
+          <Text style={styles.navText}>Learn</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7CB342',
+  },
+  backButton: {
+    marginTop: 50,         // pushes arrow down a bit from the top
+    marginLeft: 24,
+    marginBottom: 8,       // small gap before the main content
+    alignSelf: 'flex-start',
+  },
+  backArrow: {
+    fontSize: 24,
+    color: '#FFFFFF',
   },
   content: {
-    padding: 24,
-    paddingTop: 60,
+    paddingHorizontal: 24,
+    paddingTop: 20,        // extra top padding so "Hello" sits nicely below arrow
+    paddingBottom: 24,
   },
   greeting: {
     fontSize: 28,
@@ -215,7 +224,9 @@ const styles = StyleSheet.create({
   navItem: {
     padding: 8,
   },
-  navIcon: {
-    fontSize: 24,
+  navText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });

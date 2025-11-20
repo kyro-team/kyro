@@ -15,10 +15,15 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ListeningScreen({ navigation }) {
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={["#D4C5A9", "#6BA3A0", "#7CB342"]}
+      locations={[0, 0.5, 1]}
+      style={styles.container}
+    >
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.goBack()}
@@ -41,27 +46,20 @@ export default function ListeningScreen({ navigation }) {
 
       {/* Recording Controls */}
       <View style={styles.controls}>
-        <TouchableOpacity style={styles.controlButton}>
-          <Text style={styles.controlIcon}>⏮</Text>
-        </TouchableOpacity>
         <TouchableOpacity
           style={styles.stopButton}
           onPress={() => navigation.navigate('Processing')}
         >
           <Text style={styles.stopIcon}>⏹</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.controlButton}>
-          <Text style={styles.controlIcon}>⏭</Text>
-        </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7CB342',
     padding: 24,
   },
   backButton: {
@@ -104,13 +102,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 24,
   },
-  controlButton: {
-    padding: 12,
-  },
-  controlIcon: {
-    fontSize: 24,
-    color: '#FFFFFF',
-  },
   stopButton: {
     width: 60,
     height: 60,
@@ -118,7 +109,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#D32F2F',
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 24,
   },
   stopIcon: {
     fontSize: 24,

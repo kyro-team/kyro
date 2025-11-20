@@ -11,15 +11,20 @@
  * - Transcribed speech text display
  * - "Anything else you want to talk about?" prompt
  * - YES button - navigate to continue adding more
- * - NO button - finalize and transition to Chat or Home
+ * - NO button - finalize and go to Home (done)
  */
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ConfirmationScreen({ navigation }) {
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={["#D4C5A9", "#6BA3A0", "#7CB342"]}
+      locations={[0, 0.5, 1]}
+      style={styles.container}
+    >
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.goBack()}
@@ -57,20 +62,45 @@ export default function ConfirmationScreen({ navigation }) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.noButton}
-            onPress={() => navigation.navigate('ChatInitial')}
+            onPress={() => navigation.navigate('Home')}
           >
             <Text style={styles.buttonText}>NO</Text>
           </TouchableOpacity>
         </View>
+        {/* Optional: Add text option */}
+        <TouchableOpacity
+          style={styles.typeOptionButton}
+          onPress={() => navigation.navigate('ChatInitial')}
+        >
+          <Text style={styles.typeOptionText}>Or add more by typing</Text>
+        </TouchableOpacity>
       </View>
-    </View>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => navigation.navigate('Home')}
+        >
+          <Text style={styles.navText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => navigation.navigate('SinceLastSpoke')}
+        >
+          <Text style={styles.navText}>Reflect</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem}>
+          <Text style={styles.navText}>Learn</Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7CB342',
     padding: 24,
   },
   backButton: {
@@ -145,5 +175,29 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
+  },
+  typeOptionButton: {
+    marginTop: 12,
+    paddingVertical: 8,
+  },
+  typeOptionText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    opacity: 0.7,
+    textDecorationLine: 'underline',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  navItem: {
+    padding: 8,
+  },
+  navText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });

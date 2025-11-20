@@ -13,7 +13,8 @@
  */
 
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ProcessingScreen({ navigation }) {
   useEffect(() => {
@@ -26,19 +27,41 @@ export default function ProcessingScreen({ navigation }) {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={["#D4C5A9", "#6BA3A0", "#7CB342"]}
+      locations={[0, 0.5, 1]}
+      style={styles.container}
+    >
       <View style={styles.content}>
         <Text style={styles.title}>Interesting...</Text>
         <ActivityIndicator size="large" color="#FFFFFF" style={styles.loader} />
       </View>
-    </View>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => navigation.navigate('Home')}
+        >
+          <Text style={styles.navText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => navigation.navigate('SinceLastSpoke')}
+        >
+          <Text style={styles.navText}>Reflect</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem}>
+          <Text style={styles.navText}>Learn</Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7CB342',
     padding: 24,
   },
   content: {
@@ -55,5 +78,19 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 16,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  navItem: {
+    padding: 8,
+  },
+  navText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });

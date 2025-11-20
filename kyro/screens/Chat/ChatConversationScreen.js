@@ -13,6 +13,7 @@
  * - Text input with keyboard
  * - AI typing/processing indicators
  * - Quick reply suggestions
+ * - Done/Finish button to complete conversation
  * - Conversation log options
  */
 
@@ -27,6 +28,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ChatConversationScreen({ navigation }) {
   const [message, setMessage] = useState('');
@@ -65,63 +67,88 @@ export default function ChatConversationScreen({ navigation }) {
     }, 1500);
   };
 
+  const handleDone = () => {
+    navigation.navigate('ChatSummary');
+  };
+
   return (
-    <KeyboardAvoidingView
+    <LinearGradient
+      colors={["#D4C5A9", "#6BA3A0", "#7CB342"]}
+      locations={[0, 0.5, 1]}
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <Text style={styles.title}>Let's chat...</Text>
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <Text style={styles.title}>Let's chat...</Text>
 
-      <ScrollView style={styles.messagesContainer} contentContainerStyle={styles.messagesContent}>
-        {messages.map((msg) => (
-          <View
-            key={msg.id}
-            style={[
-              styles.messageBubble,
-              msg.type === 'ai' ? styles.aiBubble : styles.userBubble,
-            ]}
+        <ScrollView style={styles.messagesContainer} contentContainerStyle={styles.messagesContent}>
+          {messages.map((msg) => (
+            <View
+              key={msg.id}
+              style={[
+                styles.messageBubble,
+                msg.type === 'ai' ? styles.aiBubble : styles.userBubble,
+              ]}
+            >
+              <Text style={styles.messageText}>{msg.text}</Text>
+            </View>
+          ))}
+        </ScrollView>
+
+        {/* Input Area */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="What's going on?"
+            placeholderTextColor="rgba(255, 255, 255, 0.6)"
+            value={message}
+            onChangeText={setMessage}
+            onSubmitEditing={sendMessage}
+            returnKeyType="send"
+          />
+          <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+            <Text style={styles.sendIcon}>➤</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Done Button */}
+        <View style={styles.doneContainer}>
+          <TouchableOpacity style={styles.doneButton} onPress={handleDone}>
+            <Text style={styles.doneButtonText}>Done</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Bottom Navigation */}
+        <View style={styles.bottomNav}>
+          <TouchableOpacity
+            style={styles.navItem}
+            onPress={() => navigation.navigate('Home')}
           >
-            <Text style={styles.messageText}>{msg.text}</Text>
-          </View>
-        ))}
-      </ScrollView>
-
-      {/* Input Area */}
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.textInput}
-          placeholder="What's going on?"
-          placeholderTextColor="rgba(255, 255, 255, 0.6)"
-          value={message}
-          onChangeText={setMessage}
-          onSubmitEditing={sendMessage}
-          returnKeyType="send"
-        />
-        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-          <Text style={styles.sendIcon}>➤</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Text style={styles.navIcon}>🏠</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>💬</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+            <Text style={styles.navText}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.navItem}
+            onPress={() => navigation.navigate('SinceLastSpoke')}
+          >
+            <Text style={styles.navText}>Reflect</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <Text style={styles.navText}>Learn</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7CB342',
+  },
+  keyboardView: {
+    flex: 1,
   },
   title: {
     fontSize: 24,
@@ -185,6 +212,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#FFFFFF',
   },
+  doneContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+    alignItems: 'center',
+  },
+  doneButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 24,
+  },
+  doneButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
   bottomNav: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -194,7 +237,9 @@ const styles = StyleSheet.create({
   navItem: {
     padding: 8,
   },
-  navIcon: {
-    fontSize: 24,
+  navText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });

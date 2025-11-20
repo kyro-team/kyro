@@ -22,10 +22,15 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ChatSummaryScreen({ navigation }) {
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={["#D4C5A9", "#6BA3A0", "#7CB342"]}
+      locations={[0, 0.5, 1]}
+      style={styles.container}
+    >
       <Text style={styles.title}>Let's chat...</Text>
 
       <ScrollView style={styles.messagesContainer} contentContainerStyle={styles.messagesContent}>
@@ -66,20 +71,25 @@ export default function ChatSummaryScreen({ navigation }) {
           style={styles.navItem}
           onPress={() => navigation.navigate('Home')}
         >
-          <Text style={styles.navIcon}>🏠</Text>
+          <Text style={styles.navText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => navigation.navigate('SinceLastSpoke')}
+        >
+          <Text style={styles.navText}>Reflect</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>💬</Text>
+          <Text style={styles.navText}>Learn</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7CB342',
   },
   title: {
     fontSize: 24,
@@ -120,14 +130,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logButton: {
-    backgroundColor: '#4FC3F7',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
     paddingHorizontal: 32,
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 24,
   },
   logButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
   bottomNav: {
@@ -139,7 +149,9 @@ const styles = StyleSheet.create({
   navItem: {
     padding: 8,
   },
-  navIcon: {
-    fontSize: 24,
+  navText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
