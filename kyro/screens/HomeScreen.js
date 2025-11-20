@@ -14,11 +14,18 @@
  * - Bottom navigation (Home, Reflect, Learn)
  */
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useAuth } from '../../src/contexts/AuthContext';
-import { getFormattedCalendarEvents } from '../../src/services/calendarService';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { getFormattedCalendarEvents } from "../../src/services/calendarService";
 
 export default function HomeScreen({ navigation }) {
   const { user, accessToken } = useAuth();
@@ -27,14 +34,14 @@ export default function HomeScreen({ navigation }) {
   const [eventsError, setEventsError] = useState(null);
 
   // Get user's first name
-  const firstName = user?.displayName?.split(' ')[0] || 'there';
+  const firstName = user?.displayName?.split(" ")[0] || "there";
 
   // Get time-based greeting
   const getTimeGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'morning';
-    if (hour < 17) return 'afternoon';
-    return 'evening';
+    if (hour < 12) return "morning";
+    if (hour < 17) return "afternoon";
+    return "evening";
   };
 
   // Check if we can go back (i.e., if Welcome screen is in stack)
@@ -52,7 +59,7 @@ export default function HomeScreen({ navigation }) {
         const calendarEvents = await getFormattedCalendarEvents(accessToken, 5);
         setEvents(calendarEvents);
       } catch (error) {
-        console.error('Failed to fetch calendar events:', error);
+        console.error("Failed to fetch calendar events:", error);
         setEventsError(error.message);
       } finally {
         setLoadingEvents(false);
@@ -76,7 +83,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
       )}
-      
+
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.greeting}>Hello {firstName},</Text>
         <Text style={styles.subtitle}>
@@ -115,10 +122,12 @@ export default function HomeScreen({ navigation }) {
 
         {/* Reflection Prompt */}
         <View style={styles.promptContainer}>
-          <Text style={styles.promptText}>Do you want to reflect on your week?</Text>
+          <Text style={styles.promptText}>
+            Do you want to reflect on your week?
+          </Text>
           <TouchableOpacity
             style={styles.talkButton}
-            onPress={() => navigation.navigate('SinceLastSpoke')}
+            onPress={() => navigation.navigate("SinceLastSpoke")}
           >
             <Text style={styles.talkButtonText}>Let's talk</Text>
           </TouchableOpacity>
@@ -129,13 +138,13 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.bottomNav}>
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate("Home")}
         >
           <Text style={styles.navText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate('SinceLastSpoke')}
+          onPress={() => navigation.navigate("SinceLastSpoke")}
         >
           <Text style={styles.navText}>Reflect</Text>
         </TouchableOpacity>
@@ -152,14 +161,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 60,
     left: 24,
     zIndex: 10,
   },
   backArrow: {
     fontSize: 24,
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   content: {
     padding: 24,
@@ -167,13 +176,13 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     opacity: 0.9,
     marginBottom: 24,
   },
@@ -181,75 +190,75 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   activityItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
   },
   activityText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   eventTime: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 12,
     opacity: 0.8,
     marginBottom: 4,
   },
   eventLocation: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 12,
     opacity: 0.7,
     marginTop: 4,
   },
   loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     padding: 16,
   },
   loadingText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
     marginLeft: 8,
     opacity: 0.9,
   },
   promptContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
     padding: 20,
     borderRadius: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   promptText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   talkButton: {
-    backgroundColor: '#2E7D32',
+    backgroundColor: "#2E7D32",
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 24,
   },
   talkButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     paddingVertical: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: "rgba(0, 0, 0, 0.1)",
   },
   navItem: {
     padding: 8,
   },
   navText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
