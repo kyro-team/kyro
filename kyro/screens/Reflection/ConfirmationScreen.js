@@ -80,27 +80,6 @@ export default function ConfirmationScreen({ navigation, route }) {
         </ScrollView>
       </View>
 
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => navigation.navigate('SinceLastSpoke')}
-        >
-          <View style={styles.navIcon} />
-          <Text style={styles.navText}>REFLECT</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <View style={[styles.navIcon, styles.navIconSquare]} />
-          <Text style={styles.navText}>PLAN</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <View style={styles.navIconContainer}>
-            <View style={styles.navIconHead} />
-            <View style={styles.navIconBody} />
-          </View>
-          <Text style={styles.navText}>LEARN</Text>
-        </TouchableOpacity>
-      </View>
     </PaperBackground>
   );
 }
@@ -199,57 +178,5 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.small,
     opacity: 0.7,
     textDecorationLine: 'underline',
-  },
-  // BOTTOM NAVIGATION
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 16,
-    paddingBottom: 20,
-    backgroundColor: COLORS.sandTan,
-    borderTopWidth: 0,
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  navIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: COLORS.darkerBrown,
-    marginBottom: 8,
-  },
-  navIconSquare: {
-    borderRadius: 2,
-    backgroundColor: 'transparent',
-    borderWidth: 2.5,
-    borderColor: COLORS.darkerBrown,
-  },
-  navIconContainer: {
-    width: 28,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  navIconHead: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.darkerBrown,
-    marginBottom: 1,
-  },
-  navIconBody: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: COLORS.darkerBrown,
-  },
-  navText: {
-    color: COLORS.darkBrown,
-    fontSize: FONT_SIZES.tiny,
-    fontWeight: '700',
-    letterSpacing: 0.3,
   },
 });

@@ -31,7 +31,7 @@ export default function WelcomeScreen({ navigation }) {
   // Navigate to Home when authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigation.replace("Home");
+      navigation.replace("MainApp");
     }
   }, [isAuthenticated, navigation]);
 
@@ -72,7 +72,7 @@ export default function WelcomeScreen({ navigation }) {
 
         <TouchableOpacity
           style={styles.skipButton}
-          onPress={() => navigation.replace("Home")}
+          onPress={() => navigation.replace("MainApp")}
           activeOpacity={0.7}
         >
           <Text style={styles.skipButtonText}>Skip for now</Text>

@@ -163,27 +163,6 @@ export default function HomeScreen({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => navigation.navigate("SinceLastSpoke")}
-        >
-          <View style={styles.navIcon} />
-          <Text style={styles.navText}>REFLECT</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <View style={[styles.navIcon, styles.navIconSquare]} />
-          <Text style={styles.navText}>PLAN</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <View style={styles.navIconContainer}>
-            <View style={styles.navIconHead} />
-            <View style={styles.navIconBody} />
-          </View>
-          <Text style={styles.navText}>LEARN</Text>
-        </TouchableOpacity>
-      </View>
         </LinearGradient>
       </ImageBackground>
     </View>
@@ -390,57 +369,5 @@ const styles = StyleSheet.create({
     color: "#3D2817",
     fontSize: 16,
     fontWeight: "700",
-  },
-  // BOTTOM NAVIGATION
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingVertical: 16,
-    paddingBottom: 20,
-    backgroundColor: "#D4C5A9",
-    borderTopWidth: 0,
-  },
-  navItem: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  navIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "#3d2f24",
-    marginBottom: 8,
-  },
-  navIconSquare: {
-    borderRadius: 2,
-    backgroundColor: "transparent",
-    borderWidth: 2.5,
-    borderColor: "#3d2f24",
-  },
-  navIconContainer: {
-    width: 28,
-    height: 28,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 8,
-  },
-  navIconHead: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#3d2f24",
-    marginBottom: 1,
-  },
-  navIconBody: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: "#3d2f24",
-  },
-  navText: {
-    color: "#3D2817",
-    fontSize: 9,
-    fontWeight: "700",
-    letterSpacing: 0.3,
   },
 });
