@@ -17,6 +17,8 @@ import HomeScreen from '../screens/Home/HomeScreen';
 import SinceLastSpokeScreen from '../screens/Reflection/SinceLastSpokeScreen';
 import ReadyToTalkScreen from '../screens/Reflection/ReadyToTalkScreen';
 import ListeningScreen from '../screens/Reflection/ListeningScreen';
+import WoZListeningScreen from '../screens/Reflection/WoZListeningScreen';
+import UserSaidScreen from '../screens/Reflection/UserSaidScreen';
 import ProcessingScreen from '../screens/Reflection/ProcessingScreen';
 import ConfirmationScreen from '../screens/Reflection/ConfirmationScreen';
 import SummaryScreen from '../screens/Reflection/SummaryScreen';
@@ -55,6 +57,9 @@ function ReflectStackNavigator() {
       <ReflectStack.Screen name="SinceLastSpoke" component={SinceLastSpokeScreen} />
       <ReflectStack.Screen name="ReadyToTalk" component={ReadyToTalkScreen} />
       <ReflectStack.Screen name="Listening" component={ListeningScreen} />
+      {/* Wizard-of-Oz Voice Flow */}
+      <ReflectStack.Screen name="WoZListening" component={WoZListeningScreen} />
+      <ReflectStack.Screen name="UserSaid" component={UserSaidScreen} />
       <ReflectStack.Screen name="Processing" component={ProcessingScreen} />
       <ReflectStack.Screen name="Confirmation" component={ConfirmationScreen} />
       <ReflectStack.Screen name="Summary" component={SummaryScreen} />

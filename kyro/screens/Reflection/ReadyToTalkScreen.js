@@ -12,7 +12,8 @@ import { COLORS, SPACING, FONT_SIZES, GRADIENTS } from '../../theme';
 
 export default function ReadyToTalkScreen({ navigation }) {
   const handleStartRecording = () => {
-    navigation.navigate('Listening');
+    // Navigate to Wizard-of-Oz simulated listening
+    navigation.navigate('WoZListening');
   };
 
   const handleCantTalk = () => {

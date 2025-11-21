@@ -17,15 +17,17 @@ import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'rea
 import { PaperBackground } from '../../theme/components';
 import { COLORS, SPACING, FONT_SIZES } from '../../theme';
 
-export default function ProcessingScreen({ navigation }) {
+export default function ProcessingScreen({ navigation, route }) {
+  const transcript = route?.params?.transcript || '';
+
   useEffect(() => {
-    // Simulate processing time, then navigate to confirmation
+    // Simulate processing time, then navigate to Summary with transcript
     const timer = setTimeout(() => {
-      navigation.navigate('Confirmation');
+      navigation.navigate('Summary', { transcript });
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [navigation]);
+  }, [navigation, transcript]);
 
   return (
     <PaperBackground>
