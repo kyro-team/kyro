@@ -15,11 +15,14 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { PaperBackground } from '../../theme/components';
 import { COLORS, SPACING, FONT_SIZES } from '../../theme';
 
-export default function ConfirmationScreen({ navigation }) {
+export default function ConfirmationScreen({ navigation, route }) {
+  // Get transcript from navigation params
+  const transcript = route?.params?.transcript || 'No transcript available.';
+
   return (
     <PaperBackground>
       <View style={styles.container}>
@@ -32,19 +35,20 @@ export default function ConfirmationScreen({ navigation }) {
 
         <Text style={styles.title}>You said...</Text>
 
-        <View style={styles.content}>
-          {/* User Avatar Placeholder */}
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>👤</Text>
-          </View>
+        <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <View style={styles.content}>
+            {/* User Avatar Placeholder */}
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>👤</Text>
+            </View>
 
-          {/* Transcribed Text Placeholder */}
-          <View style={styles.transcriptContainer}>
-            <Text style={styles.transcriptText}>
-              [Transcribed speech will appear here]
-            </Text>
+            {/* Transcribed Text */}
+            <View style={styles.transcriptContainer}>
+              <Text style={styles.transcriptText}>
+                "{transcript}"
+              </Text>
+            </View>
           </View>
-        </View>
 
         {/* Confirmation Prompt */}
         <View style={styles.promptContainer}>
@@ -73,6 +77,7 @@ export default function ConfirmationScreen({ navigation }) {
             <Text style={styles.typeOptionText}>Or add more by typing</Text>
           </TouchableOpacity>
         </View>
+        </ScrollView>
       </View>
 
       {/* Bottom Navigation */}
@@ -104,6 +109,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: SPACING.lg,
+  },
+  scrollContent: {
+    flex: 1,
   },
   backButton: {
     marginBottom: SPACING.lg,

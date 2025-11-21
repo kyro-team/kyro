@@ -1,68 +1,309 @@
 /**
  * ListeningScreen
  *
- * GOAL: Active recording state that captures the user's voice input.
- * Displays "I'm listening" to indicate the app is actively recording
- * and processing the user's speech in real-time.
- *
- * Key Features:
- * - "I'm listening" message
- * - Audio waveform visualization (animated)
- * - Real-time voice recording
- * - Stop button to end recording
- * - Transitions to Processing screen when stopped
+ * Active recording/typing state for capturing user reflections.
+ * Supports both voice input (when available) and typing mode.
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { PaperBackground } from '../../theme/components';
-import { COLORS, SPACING, FONT_SIZES } from '../../theme';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  Animated,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS, SPACING, FONT_SIZES, GRADIENTS } from '../../theme';
 
-export default function ListeningScreen({ navigation }) {
+// Check if we're in development build with native modules
+let SpeechRecognition = null;
+try {
+  SpeechRecognition = require('expo-speech-recognition');
+} catch (e) {
+  console.log('Speech recognition not available');
+}
+
+export default function ListeningScreen({ navigation, route }) {
+  const typingMode = route?.params?.typingMode || !SpeechRecognition;
+
+  const [transcript, setTranscript] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [isTyping, setIsTyping] = useState(typingMode);
+
+  // Animation for waveform
+  const waveAnims = useRef([
+    new Animated.Value(20),
+    new Animated.Value(35),
+    new Animated.Value(25),
+    new Animated.Value(40),
+    new Animated.Value(30),
+    new Animated.Value(45),
+    new Animated.Value(25),
+  ]).current;
+
+  // Start listening on mount if not in typing mode
+  useEffect(() => {
+    if (!isTyping) {
+      startListening();
+    }
+    return () => {
+      if (SpeechRecognition?.ExpoSpeechRecognitionModule) {
+        try {
+          SpeechRecognition.ExpoSpeechRecognitionModule.stop();
+        } catch (e) {}
+      }
+    };
+  }, []);
+
+  // Animate waveform
+  useEffect(() => {
+    if (isListening) {
+      const animations = waveAnims.map((anim, i) => {
+        const toValue = 20 + Math.random() * 40;
+        const duration = 200 + Math.random() * 300;
+        return Animated.loop(
+          Animated.sequence([
+            Animated.timing(anim, {
+              toValue,
+              duration,
+              useNativeDriver: false,
+            }),
+            Animated.timing(anim, {
+              toValue: 20,
+              duration,
+              useNativeDriver: false,
+            }),
+          ])
+        );
+      });
+
+      animations.forEach(a => a.start());
+      return () => animations.forEach(a => a.stop());
+    }
+  }, [isListening]);
+
+  // Speech recognition event handlers
+  useEffect(() => {
+    if (!SpeechRecognition?.useSpeechRecognitionEvent) return;
+
+    const unsubResult = SpeechRecognition.useSpeechRecognitionEvent('result', (event) => {
+      const result = event.results[event.resultIndex];
+      if (result) {
+        setTranscript(result.transcript);
+      }
+    });
+
+    const unsubStart = SpeechRecognition.useSpeechRecognitionEvent('start', () => {
+      setIsListening(true);
+    });
+
+    const unsubEnd = SpeechRecognition.useSpeechRecognitionEvent('end', () => {
+      setIsListening(false);
+    });
+
+    return () => {
+      unsubResult?.();
+      unsubStart?.();
+      unsubEnd?.();
+    };
+  }, []);
+
+  const startListening = async () => {
+    if (!SpeechRecognition?.ExpoSpeechRecognitionModule) {
+      // Fallback to typing mode
+      setIsTyping(true);
+      return;
+    }
+
+    try {
+      const { granted } = await SpeechRecognition.ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      if (!granted) {
+        setIsTyping(true);
+        return;
+      }
+
+      SpeechRecognition.ExpoSpeechRecognitionModule.start({
+        lang: 'en-US',
+        interimResults: true,
+        continuous: true,
+        addsPunctuation: true,
+      });
+      setIsListening(true);
+    } catch (e) {
+      console.error('Speech recognition error:', e);
+      setIsTyping(true);
+    }
+  };
+
+  const handleStop = () => {
+    if (SpeechRecognition?.ExpoSpeechRecognitionModule && isListening) {
+      try {
+        SpeechRecognition.ExpoSpeechRecognitionModule.stop();
+      } catch (e) {}
+    }
+    setIsListening(false);
+  };
+
+  const handleConfirm = () => {
+    if (!transcript.trim()) return;
+
+    handleStop();
+    navigation.navigate('Summary', {
+      transcript: transcript.trim(),
+    });
+  };
+
+  const handleBack = () => {
+    handleStop();
+    navigation.goBack();
+  };
+
   return (
-    <PaperBackground>
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require('../../assets/textures/paper-texture.jpg')}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          colors={GRADIENTS.primary.colors}
+          locations={GRADIENTS.primary.locations}
+          style={styles.gradient}
         >
-          <Text style={styles.backArrow}>←</Text>
-        </TouchableOpacity>
+          <View style={styles.grainOverlay} />
 
-        <View style={styles.content}>
-          <Text style={styles.title}>I'm listening</Text>
-
-          {/* Waveform Visualization Placeholder */}
-          <View style={styles.waveformContainer}>
-            <View style={styles.waveBar} />
-            <View style={[styles.waveBar, styles.waveBarTall]} />
-            <View style={styles.waveBar} />
-            <View style={[styles.waveBar, styles.waveBarTall]} />
-            <View style={styles.waveBar} />
-          </View>
-        </View>
-
-        {/* Recording Controls */}
-        <View style={styles.controls}>
-          <TouchableOpacity
-            style={styles.stopButton}
-            onPress={() => navigation.navigate('Processing')}
+          <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
-            <Text style={styles.stopIcon}>⏹</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </PaperBackground>
+            {/* Back button */}
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <Text style={styles.backArrow}>←</Text>
+            </TouchableOpacity>
+
+            {/* Main content */}
+            <View style={styles.content}>
+              <Text style={styles.title}>
+                {isTyping ? "What's on your mind?" : "I'm listening"}
+              </Text>
+
+              {isTyping ? (
+                // Typing mode
+                <View style={styles.inputCard}>
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Share your thoughts..."
+                    placeholderTextColor={COLORS.text.muted}
+                    value={transcript}
+                    onChangeText={setTranscript}
+                    multiline
+                    textAlignVertical="top"
+                    autoFocus
+                  />
+                </View>
+              ) : (
+                // Voice mode with waveform
+                <>
+                  {transcript ? (
+                    <View style={styles.transcriptPreview}>
+                      <Text style={styles.transcriptText} numberOfLines={4}>
+                        "{transcript}"
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  <View style={styles.waveformContainer}>
+                    {waveAnims.map((anim, i) => (
+                      <Animated.View
+                        key={i}
+                        style={[styles.waveBar, { height: anim }]}
+                      />
+                    ))}
+                  </View>
+                </>
+              )}
+            </View>
+
+            {/* Control buttons */}
+            <View style={styles.controlsContainer}>
+              <View style={styles.controls}>
+                {/* Stop button */}
+                <TouchableOpacity
+                  style={styles.controlButton}
+                  onPress={handleStop}
+                >
+                  <View style={styles.stopIcon} />
+                </TouchableOpacity>
+
+                {/* Confirm button */}
+                <TouchableOpacity
+                  style={[
+                    styles.controlButton,
+                    styles.confirmButton,
+                    !transcript && styles.buttonDisabled,
+                  ]}
+                  onPress={handleConfirm}
+                  disabled={!transcript}
+                >
+                  <Text style={styles.checkIcon}>✓</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </KeyboardAvoidingView>
+
+          {/* Bottom Navigation */}
+          <View style={styles.bottomNav}>
+            <TouchableOpacity
+              style={styles.navItem}
+              onPress={() => navigation.navigate('SinceLastSpoke')}
+            >
+              <View style={styles.navIcon} />
+              <Text style={styles.navText}>REFLECT</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.navItem}>
+              <View style={[styles.navIcon, styles.navIconSquare]} />
+              <Text style={styles.navText}>PLAN</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.navItem}>
+              <View style={styles.navIconContainer}>
+                <View style={styles.navIconHead} />
+                <View style={styles.navIconBody} />
+              </View>
+              <Text style={styles.navText}>LEARN</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+  },
+  grainOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    opacity: 0.5,
+    pointerEvents: 'none',
+  },
   container: {
     flex: 1,
-    padding: SPACING.lg,
   },
   backButton: {
-    marginBottom: SPACING.lg,
+    position: 'absolute',
+    top: 60,
+    left: SPACING.lg,
+    zIndex: 10,
   },
   backArrow: {
     fontSize: FONT_SIZES.h2,
@@ -72,46 +313,152 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+    paddingTop: 80,
   },
   title: {
-    fontSize: FONT_SIZES.h1,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '700',
     color: COLORS.darkBrown,
     textAlign: 'center',
-    marginBottom: 48,
+    marginBottom: SPACING.xl,
+  },
+  // Typing mode styles
+  inputCard: {
+    backgroundColor: COLORS.paperBeige,
+    borderRadius: 24,
+    padding: SPACING.lg,
+    width: '100%',
+    minHeight: 200,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  textInput: {
+    fontSize: FONT_SIZES.body,
+    color: COLORS.darkBrown,
+    lineHeight: 26,
+    minHeight: 160,
+  },
+  // Voice mode styles
+  transcriptPreview: {
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    borderRadius: 16,
+    padding: SPACING.md,
+    marginBottom: SPACING.xl,
+    maxWidth: '90%',
+  },
+  transcriptText: {
+    fontSize: FONT_SIZES.body,
+    color: COLORS.darkBrown,
+    fontStyle: 'italic',
+    textAlign: 'center',
+    lineHeight: 24,
   },
   waveformContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 60,
+    justifyContent: 'center',
+    height: 80,
+    gap: 8,
   },
   waveBar: {
-    width: 4,
-    height: 20,
+    width: 8,
     backgroundColor: COLORS.primaryTeal,
-    marginHorizontal: 4,
-    borderRadius: 2,
+    borderRadius: 4,
   },
-  waveBarTall: {
-    height: 40,
+  // Control buttons
+  controlsContainer: {
+    alignItems: 'center',
+    paddingBottom: SPACING.xl,
   },
   controls: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: SPACING.lg,
+    gap: 24,
   },
-  stopButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: COLORS.accentRed,
+  controlButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: COLORS.paperBeige,
     borderWidth: 2.5,
     borderColor: COLORS.darkBrown,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  confirmButton: {
+    backgroundColor: COLORS.primaryTeal,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   stopIcon: {
-    fontSize: FONT_SIZES.h2,
+    width: 20,
+    height: 20,
+    backgroundColor: COLORS.darkBrown,
+    borderRadius: 3,
+  },
+  checkIcon: {
+    fontSize: 28,
+    color: COLORS.darkBrown,
+    fontWeight: '700',
+  },
+  // Bottom Navigation
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 16,
+    paddingBottom: 20,
+    backgroundColor: COLORS.sandTan,
+  },
+  navItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.darkerBrown,
+    marginBottom: 8,
+  },
+  navIconSquare: {
+    borderRadius: 2,
+    backgroundColor: 'transparent',
+    borderWidth: 2.5,
+    borderColor: COLORS.darkerBrown,
+  },
+  navIconContainer: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  navIconHead: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.darkerBrown,
+    marginBottom: 1,
+  },
+  navIconBody: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: COLORS.darkerBrown,
+  },
+  navText: {
+    color: COLORS.darkBrown,
+    fontSize: FONT_SIZES.tiny,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
 });

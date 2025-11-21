@@ -15,6 +15,7 @@ import ReadyToTalkScreen from "./screens/Reflection/ReadyToTalkScreen";
 import ListeningScreen from "./screens/Reflection/ListeningScreen";
 import ProcessingScreen from "./screens/Reflection/ProcessingScreen";
 import ConfirmationScreen from "./screens/Reflection/ConfirmationScreen";
+import SummaryScreen from "./screens/Reflection/SummaryScreen";
 
 // Chat Flow (Text-based)
 import ChatInitialScreen from "./screens/Chat/ChatInitialScreen";
@@ -46,6 +47,7 @@ export default function App() {
           <Stack.Screen name="Listening" component={ListeningScreen} />
           <Stack.Screen name="Processing" component={ProcessingScreen} />
           <Stack.Screen name="Confirmation" component={ConfirmationScreen} />
+          <Stack.Screen name="Summary" component={SummaryScreen} />
 
           {/* Chat Flow */}
           <Stack.Screen name="ChatInitial" component={ChatInitialScreen} />

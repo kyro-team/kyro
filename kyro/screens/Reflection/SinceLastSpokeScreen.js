@@ -1,25 +1,14 @@
 /**
  * SinceLastSpokeScreen
  *
- * GOAL: Show a timeline summary of events since the user's last reflection session.
- * Provides context for the upcoming conversation by reminding the user of recent
- * activities and experiences that could be discussed.
- *
- * Key Features:
- * - "Since we last spoke," header
- * - Chronological list of recent events/activities:
- *   - "You went to the park with Jamie"
- *   - "You finished your major design critique"
- *   - "You went to Sam's spoken word performance"
- *   - "You started listening to Lizzy McAlpine"
- * - Mic button to start recording
- * - Navigation to start recording
+ * Shows a summary of events since the user's last reflection session
+ * with cards and Talk buttons.
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { PaperBackground } from '../../theme/components';
-import { COLORS, SPACING, FONT_SIZES } from '../../theme';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS, SPACING, FONT_SIZES, GRADIENTS } from '../../theme';
 
 export default function SinceLastSpokeScreen({ navigation }) {
   const recentEvents = [
@@ -29,172 +18,117 @@ export default function SinceLastSpokeScreen({ navigation }) {
     'You started listening to Lizzy McAlpine.',
   ];
 
+  const handleTalk = (event) => {
+    navigation.navigate('ReadyToTalk', { topic: event });
+  };
+
   return (
-    <PaperBackground>
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require('../../assets/textures/paper-texture.jpg')}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          colors={GRADIENTS.primary.colors}
+          locations={GRADIENTS.primary.locations}
+          style={styles.gradient}
         >
-          <Text style={styles.backArrow}>←</Text>
-        </TouchableOpacity>
+          <View style={styles.grainOverlay} />
 
-        <Text style={styles.title}>Since we last spoke,</Text>
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.backArrow}>←</Text>
+            </TouchableOpacity>
 
-        <ScrollView style={styles.eventsList} showsVerticalScrollIndicator={false}>
-          {recentEvents.map((event, index) => (
-            <View key={index} style={styles.eventItem}>
-              <View style={styles.eventDot} />
-              <Text style={styles.eventText}>{event}</Text>
-            </View>
-          ))}
-        </ScrollView>
+            <Text style={styles.title}>Since we last{'\n'}spoke,</Text>
 
-        {/* Recording Controls */}
-        <View style={styles.controls}>
-          <TouchableOpacity
-            style={styles.micButton}
-            onPress={() => navigation.navigate('ReadyToTalk')}
-          >
-            <Text style={styles.micIcon}>🎤</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => navigation.navigate('SinceLastSpoke')}
-        >
-          <View style={styles.navIcon} />
-          <Text style={styles.navText}>REFLECT</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <View style={[styles.navIcon, styles.navIconSquare]} />
-          <Text style={styles.navText}>PLAN</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <View style={styles.navIconContainer}>
-            <View style={styles.navIconHead} />
-            <View style={styles.navIconBody} />
+            <ScrollView style={styles.eventsList} showsVerticalScrollIndicator={false}>
+              {recentEvents.map((event, index) => (
+                <View key={index} style={styles.card}>
+                  <Text style={styles.cardText}>{event}</Text>
+                  <TouchableOpacity
+                    style={styles.talkButton}
+                    onPress={() => handleTalk(event)}
+                  >
+                    <Text style={styles.talkButtonText}>Talk</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
           </View>
-          <Text style={styles.navText}>LEARN</Text>
-        </TouchableOpacity>
-      </View>
-    </PaperBackground>
+        </LinearGradient>
+      </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+  },
+  grainOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    opacity: 0.5,
+    pointerEvents: 'none',
+  },
   container: {
     flex: 1,
-    padding: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: 60,
   },
   backButton: {
     marginBottom: SPACING.lg,
   },
   backArrow: {
-    fontSize: FONT_SIZES.h2,
+    fontSize: 28,
     color: COLORS.darkBrown,
   },
   title: {
-    fontSize: FONT_SIZES.h2,
-    fontWeight: 'bold',
+    fontSize: 36,
+    fontWeight: '700',
     color: COLORS.darkBrown,
     marginBottom: SPACING.xl,
+    lineHeight: 42,
   },
   eventsList: {
     flex: 1,
   },
-  eventItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: SPACING.lg,
+  // Card styles
+  card: {
+    backgroundColor: COLORS.paperBeige,
+    borderRadius: 20,
+    padding: SPACING.lg,
+    marginBottom: SPACING.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  eventDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.primaryTeal,
-    marginRight: SPACING.md - 4,
-    marginTop: 6,
-  },
-  eventText: {
-    flex: 1,
+  cardText: {
     fontSize: FONT_SIZES.body,
     color: COLORS.darkBrown,
-    lineHeight: 22,
+    lineHeight: 24,
+    marginBottom: SPACING.sm,
   },
-  controls: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: SPACING.lg,
-  },
-  micButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  talkButton: {
+    alignSelf: 'flex-end',
     backgroundColor: COLORS.primaryTeal,
-    borderWidth: 2.5,
-    borderColor: COLORS.darkBrown,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 16,
   },
-  micIcon: {
-    fontSize: FONT_SIZES.h2,
-  },
-  // BOTTOM NAVIGATION
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 16,
-    paddingBottom: 20,
-    backgroundColor: COLORS.sandTan,
-    borderTopWidth: 0,
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  navIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: COLORS.darkerBrown,
-    marginBottom: 8,
-  },
-  navIconSquare: {
-    borderRadius: 2,
-    backgroundColor: 'transparent',
-    borderWidth: 2.5,
-    borderColor: COLORS.darkerBrown,
-  },
-  navIconContainer: {
-    width: 28,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  navIconHead: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.darkerBrown,
-    marginBottom: 1,
-  },
-  navIconBody: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: COLORS.darkerBrown,
-  },
-  navText: {
+  talkButtonText: {
+    fontSize: FONT_SIZES.small,
+    fontWeight: '600',
     color: COLORS.darkBrown,
-    fontSize: FONT_SIZES.tiny,
-    fontWeight: '700',
-    letterSpacing: 0.3,
   },
 });

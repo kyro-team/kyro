@@ -15,7 +15,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.kyro"
+      "bundleIdentifier": "com.anonymous.kyro",
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "Kyro uses speech recognition to transcribe your voice reflections.",
+        "NSMicrophoneUsageDescription": "Kyro needs access to your microphone to record your voice reflections."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,13 +27,17 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.kyro"
+      "package": "com.anonymous.kyro",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-speech-recognition"
     ]
   }
 }
