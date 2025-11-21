@@ -68,24 +68,29 @@ export default function HomeScreen({ navigation }) {
   }, [accessToken]);
 
   return (
-    <ImageBackground
-      source={require("../../assets/textures/paper-texture.jpg")}
-      style={styles.container}
-      resizeMode="cover"
-    >
-      <LinearGradient
-        colors={[
-          "rgba(232, 220, 200, 0.95)",
-          "rgba(90, 155, 147, 0.7)",
-          "rgba(90, 155, 147, 0.85)",
-        ]}
-        locations={[0, 0.6, 1]}
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("../../assets/textures/paper-texture.jpg")}
         style={styles.container}
+        resizeMode="cover"
       >
-        {/* Grain overlay for texture effect */}
-        <View style={styles.grainOverlay} />
+        <LinearGradient
+          colors={[
+            "rgba(232, 220, 200, 0.95)",
+            "rgba(90, 155, 147, 0.7)",
+            "rgba(90, 155, 147, 0.85)",
+          ]}
+          locations={[0, 0.6, 1]}
+          style={styles.container}
+        >
+          {/* Grain overlay for texture effect */}
+          <View style={styles.grainOverlay} />
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+      >
         <Text style={styles.greeting}>Hello {firstName},</Text>
         <Text style={styles.subtitle}>
           Looks like you have a pretty{" "}
@@ -136,9 +141,6 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
 
-        {/* White Line Left of X Button */}
-        <View style={styles.backButtonLine} />
-
         {/* Back Button X */}
         <TouchableOpacity
           style={styles.backButton}
@@ -182,8 +184,9 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.navText}>LEARN</Text>
         </TouchableOpacity>
       </View>
-      </LinearGradient>
-    </ImageBackground>
+        </LinearGradient>
+      </ImageBackground>
+    </View>
   );
 }
 
@@ -200,7 +203,8 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 24,
     paddingTop: 60,
-    paddingBottom: 100,
+    paddingBottom: 200,
+    minHeight: 1000,
   },
   // HEADER
   greeting: {
@@ -322,20 +326,11 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   // X BUTTON
-  backButtonLine: {
-    position: "absolute",
-    top: 378,
-    left: 16,
-    width: 2,
-    height: 20,
-    backgroundColor: "#FFFFFF",
-    zIndex: 10,
-    opacity: 0,
-  },
   backButton: {
-    position: "absolute",
-    top: 388,
-    left: 28,
+    alignSelf: "flex-start",
+    marginLeft: 24,
+    marginTop: -20,
+    marginBottom: 16,
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -344,7 +339,6 @@ const styles = StyleSheet.create({
     borderColor: "#3D2817",
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,

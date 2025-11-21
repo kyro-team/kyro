@@ -14,7 +14,8 @@
 
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { PaperBackground } from '../../theme/components';
+import { COLORS, SPACING, FONT_SIZES } from '../../theme';
 
 export default function ProcessingScreen({ navigation }) {
   useEffect(() => {
@@ -27,42 +28,43 @@ export default function ProcessingScreen({ navigation }) {
   }, [navigation]);
 
   return (
-    <LinearGradient
-      colors={["#D4C5A9", "#6BA3A0", "#7CB342"]}
-      locations={[0, 0.5, 1]}
-      style={styles.container}
-    >
-      <View style={styles.content}>
-        <Text style={styles.title}>Interesting...</Text>
-        <ActivityIndicator size="large" color="#FFFFFF" style={styles.loader} />
+    <PaperBackground>
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <Text style={styles.title}>Interesting...</Text>
+          <ActivityIndicator size="large" color={COLORS.primaryTeal} style={styles.loader} />
+        </View>
       </View>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
           onPress={() => navigation.navigate('SinceLastSpoke')}
         >
-          <Text style={styles.navText}>Reflect</Text>
+          <View style={styles.navIcon} />
+          <Text style={styles.navText}>REFLECT</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navText}>Learn</Text>
+          <View style={[styles.navIcon, styles.navIconSquare]} />
+          <Text style={styles.navText}>PLAN</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem}>
+          <View style={styles.navIconContainer}>
+            <View style={styles.navIconHead} />
+            <View style={styles.navIconBody} />
+          </View>
+          <Text style={styles.navText}>LEARN</Text>
         </TouchableOpacity>
       </View>
-    </LinearGradient>
+    </PaperBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    padding: SPACING.lg,
   },
   content: {
     flex: 1,
@@ -70,27 +72,65 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 28,
+    fontSize: FONT_SIZES.h1,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: COLORS.darkBrown,
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: SPACING.xl,
   },
   loader: {
-    marginTop: 16,
+    marginTop: SPACING.md,
   },
+  // BOTTOM NAVIGATION
   bottomNav: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    paddingBottom: 20,
+    backgroundColor: COLORS.sandTan,
+    borderTopWidth: 0,
   },
   navItem: {
-    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.darkerBrown,
+    marginBottom: 8,
+  },
+  navIconSquare: {
+    borderRadius: 2,
+    backgroundColor: 'transparent',
+    borderWidth: 2.5,
+    borderColor: COLORS.darkerBrown,
+  },
+  navIconContainer: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  navIconHead: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.darkerBrown,
+    marginBottom: 1,
+  },
+  navIconBody: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: COLORS.darkerBrown,
   },
   navText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '500',
+    color: COLORS.darkBrown,
+    fontSize: FONT_SIZES.tiny,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
 });

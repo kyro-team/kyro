@@ -14,9 +14,10 @@
 
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useFonts, DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from "@expo-google-fonts/dm-sans";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { PaperBackground, PrimaryButton, SecondaryButton } from "../../theme/components";
+import { COLORS, SPACING, TEXT_STYLES, COMPONENT_STYLES, FONT_SIZES, RADII } from "../../theme";
 
 export default function WelcomeScreen({ navigation }) {
   const { signInWithGoogle, isAuthenticated, loading } = useAuth();
@@ -44,22 +45,16 @@ export default function WelcomeScreen({ navigation }) {
 
   if (!fontsLoaded || loading) {
     return (
-      <LinearGradient
-        colors={["#D4C5A9", "#6BA3A0", "#7CB342"]}
-        locations={[0, 0.5, 1]}
-        style={styles.container}
-      >
-        <ActivityIndicator size="large" color="#3D3D3D" />
-      </LinearGradient>
+      <PaperBackground>
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color={COLORS.darkBrown} />
+        </View>
+      </PaperBackground>
     );
   }
 
   return (
-    <LinearGradient
-      colors={["#D4C5A9", "#6BA3A0", "#7CB342"]}
-      locations={[0, 0.5, 1]}
-      style={styles.container}
-    >
+    <PaperBackground>
       <View style={styles.content}>
         <Text style={styles.welcomeText}>Welcome to</Text>
         <Text style={styles.logo}>KYRO</Text>
@@ -83,7 +78,7 @@ export default function WelcomeScreen({ navigation }) {
           <Text style={styles.skipButtonText}>Skip for now</Text>
         </TouchableOpacity>
       </View>
-    </LinearGradient>
+    </PaperBackground>
   );
 }
 
@@ -95,17 +90,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 40,
+    paddingHorizontal: SPACING.xl,
   },
   welcomeText: {
-    fontSize: 16,
-    color: "#3D3D3D",
-    marginBottom: 4,
+    fontSize: FONT_SIZES.body,
+    color: COLORS.darkBrown,
+    marginBottom: SPACING.xs,
     fontFamily: "DMSans_400Regular",
   },
   logo: {
     fontSize: 52,
-    color: "#3D3D3D",
+    color: COLORS.darkBrown,
     letterSpacing: 6,
     fontFamily: "DMSans_700Bold",
   },
@@ -114,9 +109,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(255, 255, 255, 0.85)",
     paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderRadius: 28,
-    marginTop: 48,
+    paddingHorizontal: SPACING.lg + 4,
+    borderRadius: RADII.lg,
+    marginTop: SPACING.xxl + 6,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.3)",
   },
@@ -125,26 +120,26 @@ const styles = StyleSheet.create({
     height: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 12,
+    marginRight: SPACING.md - 4,
   },
   googleIcon: {
     color: "#4285F4",
-    fontSize: 16,
+    fontSize: FONT_SIZES.body,
     fontFamily: "DMSans_700Bold",
   },
   googleButtonText: {
-    color: "#3D3D3D",
-    fontSize: 15,
+    color: COLORS.darkBrown,
+    fontSize: FONT_SIZES.bodySmall,
     fontFamily: "DMSans_500Medium",
   },
   skipButton: {
-    marginTop: 20,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    marginTop: SPACING.lg - 4,
+    paddingVertical: SPACING.md - 4,
+    paddingHorizontal: SPACING.lg,
   },
   skipButtonText: {
-    color: "#3D3D3D",
-    fontSize: 14,
+    color: COLORS.darkBrown,
+    fontSize: FONT_SIZES.small,
     fontFamily: "DMSans_400Regular",
     opacity: 0.7,
   },

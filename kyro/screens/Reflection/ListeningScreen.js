@@ -15,59 +15,58 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { PaperBackground } from '../../theme/components';
+import { COLORS, SPACING, FONT_SIZES } from '../../theme';
 
 export default function ListeningScreen({ navigation }) {
   return (
-    <LinearGradient
-      colors={["#D4C5A9", "#6BA3A0", "#7CB342"]}
-      locations={[0, 0.5, 1]}
-      style={styles.container}
-    >
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.backArrow}>←</Text>
-      </TouchableOpacity>
+    <PaperBackground>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backArrow}>←</Text>
+        </TouchableOpacity>
 
-      <View style={styles.content}>
-        <Text style={styles.title}>I'm listening</Text>
+        <View style={styles.content}>
+          <Text style={styles.title}>I'm listening</Text>
 
-        {/* Waveform Visualization Placeholder */}
-        <View style={styles.waveformContainer}>
-          <View style={styles.waveBar} />
-          <View style={[styles.waveBar, styles.waveBarTall]} />
-          <View style={styles.waveBar} />
-          <View style={[styles.waveBar, styles.waveBarTall]} />
-          <View style={styles.waveBar} />
+          {/* Waveform Visualization Placeholder */}
+          <View style={styles.waveformContainer}>
+            <View style={styles.waveBar} />
+            <View style={[styles.waveBar, styles.waveBarTall]} />
+            <View style={styles.waveBar} />
+            <View style={[styles.waveBar, styles.waveBarTall]} />
+            <View style={styles.waveBar} />
+          </View>
+        </View>
+
+        {/* Recording Controls */}
+        <View style={styles.controls}>
+          <TouchableOpacity
+            style={styles.stopButton}
+            onPress={() => navigation.navigate('Processing')}
+          >
+            <Text style={styles.stopIcon}>⏹</Text>
+          </TouchableOpacity>
         </View>
       </View>
-
-      {/* Recording Controls */}
-      <View style={styles.controls}>
-        <TouchableOpacity
-          style={styles.stopButton}
-          onPress={() => navigation.navigate('Processing')}
-        >
-          <Text style={styles.stopIcon}>⏹</Text>
-        </TouchableOpacity>
-      </View>
-    </LinearGradient>
+    </PaperBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    padding: SPACING.lg,
   },
   backButton: {
-    marginBottom: 24,
+    marginBottom: SPACING.lg,
   },
   backArrow: {
-    fontSize: 24,
-    color: '#FFFFFF',
+    fontSize: FONT_SIZES.h2,
+    color: COLORS.darkBrown,
   },
   content: {
     flex: 1,
@@ -75,9 +74,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 28,
+    fontSize: FONT_SIZES.h1,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: COLORS.darkBrown,
     textAlign: 'center',
     marginBottom: 48,
   },
@@ -89,7 +88,7 @@ const styles = StyleSheet.create({
   waveBar: {
     width: 4,
     height: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.primaryTeal,
     marginHorizontal: 4,
     borderRadius: 2,
   },
@@ -100,18 +99,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 24,
+    paddingVertical: SPACING.lg,
   },
   stopButton: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#D32F2F',
+    backgroundColor: COLORS.accentRed,
+    borderWidth: 2.5,
+    borderColor: COLORS.darkBrown,
     justifyContent: 'center',
     alignItems: 'center',
   },
   stopIcon: {
-    fontSize: 24,
-    color: '#FFFFFF',
+    fontSize: FONT_SIZES.h2,
   },
 });
